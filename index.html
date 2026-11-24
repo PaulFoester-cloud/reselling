@@ -289,3 +289,4 @@ function go(){if(!S.cfg)return $('#main').innerHTML='<p class="note">Lade Datenâ
  db=await claude.use('db');if(!db)return;clearTimeout(t);
  for(const n of[...N,'cfg']){col[n]=db.collection(n);col[n].onSnapshot(s=>{if(n==='cfg'){const c=s.docs.find(d=>d.id==='main')?.data();if(c)S.cfg=c;else if(!S.cfg){S.cfg={team:['Person 1','Person 2','Person 3'],plats:['Vinted','eBay Kleinanzeigen','Depop'],carriers:['DHL','DPD','Hermes','Sonstige'],locs:['Regal A','Box 01','Box 02','Kleiderstange B'],share:[33.33,33.33,33.34]};col.cfg.doc('main').get().then(g=>{if(!g.exists)col.cfg.doc('main').set(S.cfg)})}}else S[n]=s.docs.map(d=>d.data());if(!document.querySelector('.mod'))go()},e=>{$('#main').innerHTML='<div class="al">Datenfehler: '+esc(e.message)+'</div>'})}})();
 </script></body></html>
+<!-- redeploy -->
