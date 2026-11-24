@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Resale Hub</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Resale Hub">
+<meta name="theme-color" content="#ffffff">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#fff;--sf:#f7f8fa;--tx:#171717;--mut:#6b7280;--bd:#e5e7eb;--g:#15803d;--r:#dc2626;--bt:#171717;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif}
+#app{display:flex;min-height:100vh}
+nav{background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;padding:12px 8px;width:150px;position:sticky;top:0;height:100vh;gap:2px}
+nav b{padding:6px 10px 12px;font-size:15px}
+nav a{padding:8px 10px;border-radius:8px;color:var(--mut);cursor:pointer;display:flex;gap:8px}nav a i{font-style:normal;width:16px;text-align:center}
+nav a.on{background:#fff;color:var(--tx);border:1px solid var(--bd);padding:7px 9px;font-weight:600}
+main{flex:1;padding:18px;min-width:0;max-width:1000px}
+@media(max-width:760px){nav{position:fixed;top:auto;bottom:0;left:0;right:0;width:100%;height:auto;flex-direction:row;border-right:0;border-top:1px solid var(--bd);padding:4px 2px calc(4px + env(safe-area-inset-bottom,0px));gap:0;z-index:5}nav b{display:none}nav a{flex:1;flex-direction:column;align-items:center;gap:0;padding:5px 0;font-size:11px;border:0!important;background:none!important}nav a.on{color:var(--tx);font-weight:700}main{padding:12px 12px 80px}}
+h2{margin:0;font-size:17px}h3{margin:0 0 8px;font-size:13px;color:var(--mut);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
+.card{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:12px;margin-bottom:10px}.s{background:var(--sf)}
+.k{font-size:11px;color:var(--mut)}.v{font-size:17px;font-weight:650}.pos{color:var(--g)}.neg{color:var(--r)}
+button,select,input,textarea{font:inherit;color:var(--tx);background:#fff;border:1px solid #d1d5db;border-radius:8px;padding:7px 10px}
+button{cursor:pointer}button.p{background:var(--bt);border-color:var(--bt);color:#fff}button.d{color:var(--r)}button.x{padding:3px 8px;font-size:12px}button:disabled{opacity:.5}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.sp{flex:1}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}th{color:var(--mut);font-weight:500;background:var(--sf)}tr.c{cursor:pointer}tr.c:hover{background:var(--sf)}
+.tag{background:var(--sf);border:1px solid var(--bd);padding:1px 7px;border-radius:99px;font-size:12px}.tag.w{background:#fffbeb;border-color:#fcd34d;color:#92400e}
+.al{background:#fef2f2;border-left:3px solid var(--r);padding:6px 9px;border-radius:6px;margin-bottom:5px}.in{background:var(--sf);padding:6px 9px;border-radius:6px;margin-bottom:5px}
+.mod{position:fixed;inset:0;background:#0006;display:flex;align-items:center;justify-content:center;z-index:20;padding:10px}
+.mod>form,.mod>div{background:#fff;border-radius:12px;padding:16px;width:100%;max-width:460px;max-height:92vh;overflow:auto}.mod>.wide{max-width:760px}
+.mod label,.lb{display:block;font-size:11px;color:var(--mut);margin:10px 0 4px}.mod form input,.mod form select,.mod form textarea{width:100%}
+.pc{display:grid;grid-template-columns:80px 1fr;gap:8px;border:1px solid var(--bd);border-radius:10px;padding:8px;margin-bottom:8px}.pc img{width:80px;height:100px;object-fit:cover;border-radius:6px}
+.pc .f{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:4px;margin-top:4px}.pc .f input,.pc .f select,.pc textarea{width:100%;padding:5px 7px;font-size:13px}.open{background:#fffbeb!important;border-color:#fcd34d!important}
+.bar{display:flex;align-items:flex-end;gap:2px;height:90px}.bar i{flex:1;background:var(--g);border-radius:2px 2px 0 0;min-height:2px}
+.note{color:var(--mut);font-size:12px}.th{width:30px;height:30px;object-fit:cover;border-radius:5px;background:var(--sf);display:block}
+#toast{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);background:var(--bt);color:#fff;padding:8px 14px;border-radius:8px;z-index:50;display:none}
+.fl{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin-bottom:10px}.fl select,.fl input{width:100%}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.rh-auth{position:fixed;inset:0;background:#f7f8fa;z-index:9999;display:flex;align-items:center;justify-content:center;padding:18px;font-family:system-ui,sans-serif}.rh-auth form{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:24px;width:100%;max-width:380px;box-shadow:0 12px 40px #0001}.rh-auth h1{font-size:22px;margin:0 0 6px}.rh-auth p{color:#6b7280;font-size:13px}.rh-auth label{display:block;font-size:12px;color:#6b7280;margin:14px 0 5px}.rh-auth input{width:100%;padding:11px;border:1px solid #d1d5db;border-radius:8px}.rh-auth button{width:100%;margin-top:16px;padding:11px;background:#171717;color:#fff;border:0;border-radius:8px;font-weight:600}.rh-auth .err{color:#b91c1c;min-height:18px;font-size:12px}
+</style>
+</head>
+<body>
+<div id="app">
+<nav id="nav"></nav>
+<main id="main"><p class="note">Lade Daten…</p></main>
+</div>
+<div id="toast"></div>
+<datalist id="brands"></datalist>
+<datalist id="allsizes"></datalist>
+<script>
+// ================= SUPABASE-VERBINDUNG =================
+// Trage hier die Project URL und den anon/public key aus Supabase ein.
+// NIEMALS den service_role-Key in eine Website kopieren!
+const SUPABASE_URL = 'HIER_DEINE_SUPABASE_PROJECT_URL_EINTRAGEN';
+const SUPABASE_ANON_KEY = 'HIER_DEINEN_SUPABASE_ANON_PUBLIC_KEY_EINTRAGEN';
+const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let __resolveDbReady;
+window.__dbReady = new Promise(resolve => { __resolveDbReady = resolve; });
+let resaleCurrentRole = null;
+
+function showResaleLogin(message=''){
+  const old=document.getElementById('rh-auth'); if(old) old.remove();
+  const box=document.createElement('div'); box.id='rh-auth'; box.className='rh-auth';
+  box.innerHTML=`<form id="rh-login-form">
+    <h1>Resale Hub</h1>
+    <p>Dieser Bereich ist nur für freigeschaltete Teammitglieder zugänglich.</p>
+    <label>E-Mail</label><input name="email" type="email" autocomplete="username" required>
+    <label>Passwort</label><input name="password" type="password" autocomplete="current-password" required>
+    <div class="err" id="rh-login-error">${message}</div>
+    <button type="submit">Anmelden</button>
+    <p>Neue Konten werden ausschließlich vom Administrator angelegt und freigeschaltet. Eine öffentliche Registrierung gibt es nicht.</p>
+  </form>`;
+  document.body.appendChild(box);
+  box.querySelector('form').onsubmit=async e=>{
+    e.preventDefault();
+    const f=new FormData(e.target), b=e.target.querySelector('button');
+    const err=box.querySelector('#rh-login-error');
+    b.disabled=true; b.textContent='Anmeldung…'; err.textContent='';
+    const {data,error}=await sbClient.auth.signInWithPassword({email:f.get('email'),password:f.get('password')});
+    if(error){err.textContent='Anmeldung fehlgeschlagen. Prüfe E-Mail und Passwort.';b.disabled=false;b.textContent='Anmelden';return;}
+    await activateResaleSession(data.session,err,b);
+  };
+}
+
+async function activateResaleSession(session,errorNode=null,button=null){
+  if(!session?.user?.id){showResaleLogin();return false;}
+  const {data:member,error}=await sbClient.from('team_members').select('role, enabled').eq('user_id',session.user.id).maybeSingle();
+  if(error || !member || member.enabled !== true){
+    await sbClient.auth.signOut();
+    if(error) console.error('Teamprüfung fehlgeschlagen:',error);
+    const message='Kein Zugriff: Dieses Konto wurde vom Administrator nicht für den Resale Hub freigeschaltet.';
+    if(errorNode){errorNode.textContent=message;if(button){button.disabled=false;button.textContent='Anmelden';}}
+    else showResaleLogin(message);
+    return false;
+  }
+  resaleCurrentRole=member.role || 'member';
+  document.getElementById('rh-auth')?.remove();
+  __resolveDbReady();
+  return true;
+}
+
+async function initResaleAuth(){
+  if(SUPABASE_URL.startsWith('HIER_') || SUPABASE_ANON_KEY.startsWith('HIER_')){
+    const e=document.createElement('div');e.className='rh-auth';e.innerHTML='<div style="background:white;padding:22px;border-radius:12px;max-width:460px"><h2>Supabase noch nicht eingerichtet</h2><p>Öffne index.html und trage oben SUPABASE_URL sowie SUPABASE_ANON_KEY ein. Danach die Datei erneut veröffentlichen.</p></div>';document.body.appendChild(e);return;
+  }
+  const {data:{session},error}=await sbClient.auth.getSession();
+  if(error) console.error(error);
+  if(session) await activateResaleSession(session); else showResaleLogin();
+}
