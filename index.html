@@ -42,8 +42,8 @@ button{cursor:pointer}button.p{background:var(--bt);border-color:var(--bt);color
 // ================= SUPABASE-VERBINDUNG =================
 // Trage hier die Project URL und den anon/public key aus Supabase ein.
 // NIEMALS den service_role-Key in eine Website kopieren!
-const SUPABASE_URL = sb_publishable_vYRP_bElxBUBHsqSeTLsxw_fDQkRTaF;
-const SUPABASE_ANON_KEY = sb_publishable_vYRP_bElxBUBHsqSeTLsxw_fDQkRTaF;
+const SUPABASE_URL = 'https://xtfiuebtbqrofnahenms.supabase.
+const SUPABASE_ANON_KEY = 'sb_publishable_vYRP_bElxBUBHsqSeTLsxw_fDQkRTaF';
 const sbConfigured = !SUPABASE_URL.startsWith('HIER_') && !SUPABASE_ANON_KEY.startsWith('HIER_');
 const sbClient = sbConfigured ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 let __resolveDbReady;
